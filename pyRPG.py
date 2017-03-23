@@ -2,6 +2,7 @@ import os
 import random
 import time
 from utilities import roll
+from battle import *
 
 
 class Character(object):
@@ -46,7 +47,7 @@ class Player(Character):
                          charisma=7, profession="" ,inventory={})
         
  
-    invertory = {}
+    invertory = {}  # ["itemName"] = [weight, quantity, "type", value]
     perks = {'heart':False,'soul':False,'perk3':False}
     level = 1
     levelxp = 7
@@ -76,9 +77,12 @@ def new_maxwieght():
     playerchar.maxcarrywieght = maxwieghtset
 
 def new_wieghtset():
-    for key in playerchar.invertory:
-        
+    totalWieght = 0
+    for key, value in playerchar.invertory.iteritems():
+        totalWieght = totalWieght + (value[0] * value[1])
+
     playerchar.nowcarrywieght = len(playerchar.invertory)
+    return totalWieght
     
 
 playerchar = Player()
@@ -268,17 +272,18 @@ def perk_choice():
             
 def text_3():
     print "But you don't know what that is let em give you an item so you can find out"
-    playerchar.invertory[Steak] = 0.5
+    playerchar.invertory["Steak"] = [0.5, 5, "food", 15]
     new_wieghtset()
     open_invertory()
+    print "You are carrying " + str(new_wieghtset()) + "Out of a maximum: " + str(playerchar.maxcarrywieght)
+
+
 
 
 def open_invertory():
-    food =["Steak"]
     for key in playerchar.invertory:
-        if playerchar.invertory[key] == False:
             print key
-    choice = str(raw_input("\nPlease select a item\n type Close to close"))
+    choice = str(raw_input("\nPlease select a item\n type Close to close\n"))
     for key, value in playerchar.invertory.iteritems():
         if key.startswith(str(choice)):
             value = True
@@ -288,91 +293,6 @@ def open_invertory():
              
 
     
-
-def battle():
-    global battleOutcome
-    player_damage = int(round(playerchar.strength * 0.5 + playerchar.level,0))  
-    enemy_damage = int(round(enemychar.strength * 0.5 + enemychar.level,0))
-    while True:
-        if playerchar.nowhp <= 0:
-            print "You have died"
-            battleOutcome = "tried your hardest."
-            break
-        elif enemychar.nowhp <= 0:
-            print "You win!"
-            battleOutcome = "beat me."
-            level_check(enemychar.maxhp)
-            break
-        else:
-            print "|==============|"
-            print " Pick An Action"
-            print " 1 - Attack"
-            print " 2 - Defend"
-            print " 3 - Run Away"
-            print "|==============|"
-            choice = input("\n" + "Select an Action" + "\n")
-            choice = int(choice)
-
-            if choice == 1:
-                enemychar.nowhp = enemychar.nowhp - player_damage
-                printdamage(player_damage)
-                if enemychar.nowhp <=0:
-                    printEnemyHealth(0)
-                    time.sleep(2)
-                else:
-                    printEnemyHealth(enemychar.nowhp)
-                    time.sleep(2)
-                    playerchar.nowhp = playerchar.nowhp - enemy_damage
-                    printEnemydamage(enemy_damage)
-                    if playerchar.nowhp <= 0:
-                        printHealth(0)
-                        time.sleep(2)
-                    else:
-                        printHealth(playerchar.nowhp)
-                        time.sleep(2)
-            elif choice == 2:
-                defence = int(round(enemy_damage-playerchar.armor))
-                if (enemychar.damage - playerchar.armor) <=0:
-                    print "You took no damage!"
-                    enemychar.nowhp = int(round(enemychar.nowhp - playerchar.armor/2))
-                    if enemychar.nowhp <= 0:
-                        printEnemyHealth(0)
-                        time.sleep(2)
-                    else:
-                        printdamage(defence)
-                        printEnemyHealth(enemychar.nowhp)
-                        time.sleep(2)
-                else:
-                    playerchar.nowhp = playerchar.nowhp - defence
-                    print "You defended " + str(playerchar.armor) + " Points of damage!"
-                    if playerchar.nowhp <= 0:
-                        printHealth(0)
-                        printdamage(playerchar.armour/2)
-                        time.sleep(2)
-                    else:
-                        printHealth(playerchar.nowhp)
-                        printdamage(playerchar.armour/2)
-                        enemychar.nowhp = enemychar.nowhp - playerchar.armor/2
-                        printEnemyHealth(enemychar.nowhp)
-                        time.sleep(2)
-            elif choice == 3:
-                runawaychance = random.randint(1,10)
-                if runawaychance >5:
-                    print "You have fled the battle!"
-                    break
-                else:
-                    playerchar.nowhp = playerchar.nowhp - (enemy_damage + 2)
-                    print "You didn't get away!"
-                    if playerchar.nowhp <= 0:
-                        printEnemydamage(enemy_damage + 2)
-                        printHealth(0)
-                        time.sleep(2)
-                    else:
-                        printEnemydamage(enemy_damage + 2)
-                        printHealth(playerchar.nowhp)
-                        time.sleep(2)
-            else:
-                print("Please chose an option")
 
 def printHealth(hp):
     print ("You have ") + str(hp) + (" Hitpoints\n")
@@ -391,4 +311,13 @@ text_3()
 
 
 
+
+
+##for key in inventory:
+##    totalWeight = totalweight + (value[0] * value[1])
+##
+##enemies = {'Goblin' : [int,str,....] }
+##
+##def battle(enemy)
+##battle(enemies['Goblin'])
 
