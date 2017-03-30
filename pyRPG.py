@@ -2,7 +2,6 @@ import os
 import random
 from time import sleep
 from utilities import roll
-from battle import *
 
 
 
@@ -55,6 +54,25 @@ class Player(Character):
     nowxp = 0
     nowcarrywieght = 0
     maxcarrywieght = 50
+
+    def ability1(player_damage):
+        enemychar.nowhp = enemychar.nowhp - player_damage
+                printdamage(player_damage)
+                if enemychar.nowhp <=0:
+                    printEnemyHealth(0)
+                    sleep(2)
+                else:
+                    printEnemyHealth(enemychar.nowhp)
+                    sleep(2)
+                    playerchar.nowhp = playerchar.nowhp - enemy_damage
+                    printEnemydamage(enemy_damage)
+                    if playerchar.nowhp <= 0:
+                        printHealth(0)
+                        sleep(2)
+        
+
+
+        playerchar.ability1()
 
 
 class Enemy(Character):
@@ -137,18 +155,27 @@ def choosestat(statname, max, min, stats):
     # as mentioned in the Player/Character class and
     # a min/max value for the length. Allows the player
     # to set their stats for the char.
+    choice = ""
     statname_2 = statname
     max_2 = max
     min_2 = min
     stats_2 = stats
     print("Your stat choices are: " + str(stats))
-    choice = int(input("Please select a " + statname + " score \( " +str(min)+":"+str(max)+")\n"))
-    if type(choice) == int and choice < (max+1) and choice > (min-1):
-        setattr(playerchar, statname, stats[(choice-1)])
-        stats.pop(choice-1)
-    else:
-        print("Please select a valid option.\n")
-        choosestat(statname_2, max_2, min_2, stats_2)
+    while choice == "":
+        choice = int(input("Please select a " + statname + " score \( " +str(min)+":"+str(max)+")\n"))
+        if event.keysysm == 'Return':
+            choosestat(statname_2, max_2, min_2, stats_2)
+    while True:
+        if type(choice) == int and choice < (max+1) and choice > (min-1):
+            setattr(playerchar, statname, stats[(choice-1)])
+            stats.pop(choice-1)
+        elif event.keysysm == 'Return':
+            print("Please select a valid option.\n")
+            choosestat(statname_2, max_2, min_2, stats_2)
+        else:
+            print("Please select a valid option. \n")
+            choosestat(statname_2, max_2, min_2, stats_2)
+
 
 
 def displaystats(entity):
@@ -312,6 +339,7 @@ def First_item():
     open_invertory()
     print "You are carrying " + str(new_wieghtset()) + "Out of a maximum: " + str(playerchar.maxcarrywieght)
 
+
 def battle():
     global battleOutcome
     player_damage = int(round(playerchar.strength * 0.5 + playerchar.level,0))  
@@ -398,7 +426,7 @@ def battle():
                 print("Please chose an option")
 
 
-First_battle()
+menu()
 
 
 
